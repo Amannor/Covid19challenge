@@ -16,21 +16,23 @@ X = distance_to_articles_ids.keys()
 X = list(map(ast.literal_eval, X))
 best_cluster_num_to_silhouette = (-2, -2)
 X = np.array(X)
-for clusters_num in range(2,11):
+info_for_best_k = dict()
+for clusters_num in range(2,4):
 	print(f"Computing {clusters_num} clusters")
 
 	kmeans = KMeans(n_clusters=clusters_num)
 	kmeans.fit(X)
 	y_kmeans = kmeans.predict(X)
 
-	plt.scatter(X[:, 0], X[:, 1], c=y_kmeans, s=50, cmap='viridis')
-
-	centers = kmeans.cluster_centers_
-	plt.scatter(centers[:, 0], centers[:, 1], c='black', s=200, alpha=0.5)
-	# plt.show()
-
 	silhouette_avg = silhouette_score(X, y_kmeans)
-	print(f"for {clusters_num} clusters the silhouette average is {silhouette_avg}")
+	print(f"For {clusters_num} clusters the silhouette average is {silhouette_avg}")
 	if(best_cluster_num_to_silhouette[1]<silhouette_avg):
 		best_cluster_num_to_silhouette = (clusters_num, silhouette_avg)
-print(f"Highest silhouette score {best_cluster_num_to_silhouette[1]} is achieved in {best_cluster_num_to_silhouette[0]} clusters")
+		info_for_best_k["y_kmeans"] = y_kmeans
+		info_for_best_k["centers"] = kmeans.cluster_centers_
+
+print(f"Highest silhouette score {best_cluster_num_to_silhouette[1]} is achieved in {best_cluster_num_to_silhouette[0]} clusters, plotting graph for {best_cluster_num_to_silhouette[0]} clusters")
+
+plt.scatter(X[:, 0], X[:, 1], c=info_for_best_k["y_kmeans"], s=50, cmap='viridis')
+plt.scatter(info_for_best_k["centers"][:, 0], info_for_best_k["centers"][:, 1], c='black', s=200, alpha=0.5)
+plt.show()
