@@ -11,16 +11,17 @@ def find_k_nearest_neighbors(given_id):
 	nearest_neighbors_distance_to_id = SortedDict()
 	for article_id, distance_tuple in articles_ids_to_distance.items():
 		if(article_id != given_id):
-			dst = distance.euclidean(given_distance_tuple, distance_tuple)
+			dst = -1*distance.euclidean(given_distance_tuple, distance_tuple) #Multiplying by (-1) since the metric we chose gives high values for similar articles
 			nearest_neighbors_distance_to_id.setdefault(dst, []).append(article_id)
 	k_nearset = SortedDict(itertools.islice(nearest_neighbors_distance_to_id.items(), k))
 	neighbors_until_now = 0
-	print(f"nearest {k} neighbors to {given_id}:")
+	print('Note that by the metric we chose, the higher the "distance" the similar the 2 articles are')
+	print(f"Nearest {k} neighbors to {given_id}:")
 	for neighbor_distance, article_ids in k_nearset.items():
 		if neighbors_until_now>=k:
 			break
 		neighbors_until_now = neighbors_until_now + len(article_ids)
-		print(f"Distance: {round(neighbor_distance,2)} {'article id' if len(article_ids)==1 else 'article ids'}: {article_ids}")
+		print(f"Distance: {round(-1*neighbor_distance,2)} {'article id' if len(article_ids)==1 else 'article ids'}: {article_ids}")
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 full_path_for_current_distances_file = os.path.join(dir_path,"articles_ids_to_distance.json")
